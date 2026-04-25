@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlexAI - Smart Brand & Growth Partner</title>
+    
+    <!-- Google Fonts: Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js for Modern Data Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Configuration for Ingweplex Branding -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            orange: '#F25C05',
+                            dark: '#262626',
+                            navy: '#0F1D26',
+                            gold: '#D9910B',
+                            lightBg: '#F8FAFC'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)',
+                        'glow': '0 0 15px rgba(242, 92, 5, 0.3)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar for a polished look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        body {
+            color: #262626;
+            overflow: hidden;
+        }
+
+        .view-section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+            transform: translateY(10px);
+        }
+
+        .view-section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Modern Sidebar Nav Item Active State */
+        .nav-item {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(242, 92, 5, 0.15) 0%, rgba(15, 29, 38, 0) 100%);
+            color: white;
+        }
+        
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: #D9910B;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .nav-item.active i {
+            color: #D9910B;
+        }
+
+        /* Floating AI Action Button Pulse */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(242, 92, 5, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(242, 92, 5, 0); }
+            100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(242, 92, 5, 0); }
+        }
+        .ai-pulse-btn {
+            animation: pulse-ring 3s infinite;
+        }
+
+        /* Modern Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 280px;
+            background: rgba(15, 29, 38, 0.95);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            border-radius: 12px;
+            padding: 16px 20px;
+            position: fixed;
+            z-index: 100;
+            right: 32px;
+            bottom: 32px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        #toast.show {
+            visibility: visible;
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="flex h-screen bg-brand-lightBg">
+
+    <!-- SIDEBAR -->
+    <aside class="w-72 flex-shrink-0 flex flex-col text-white transition-all duration-300 bg-brand-navy shadow-xl z-20">
+        <!-- Logo -->
+        <div class="h-20 flex items-center px-8 border-b border-gray-800">
+            <div class="bg-gray-800 p-2 rounded-lg mr-3 shadow-glow">
+                <i class="fa-solid fa-bolt text-brand-gold text-xl"></i>
+            </div>
+            <span class="text-2xl font-extrabold tracking-tight">Plex<span class="text-brand-orange">AI</span></span>
+        </div>
+        
+        <!-- Menu Header -->
+        <div class="px-8 py-5 text-xs font-bold uppercase text-gray-500 tracking-widest">
+            Main Workspace
+        </div>
+
+        <!-- Navigation (Simplified Language) -->
+        <nav class="flex-1 px-4 space-y-1" id="sidebar-nav">
+            <button onclick="switchView('dashboard', 'Dashboard Overview', this)" class="nav-item active w-full flex items-center space-x-4 px-4 py-3.5 rounded-xl transition-all text-gray-400 hover:bg-gray-800 hover:text-white group">
+                <i class="fa-solid fa-chart-pie w-6 text-center group-hover:text-brand-orange transition-colors"></i>
+                <span class="font-semibold text-sm">Overview</span>
+            </button>
+            <button onclick="switchView('cx', 'Customer Journey', this)" class="nav-item w-full flex items-center space-x-4 px-4 py-3.5 rounded-xl transition-all text-gray-400 hover:bg-gray-800 hover:text-white group">
+                <i class="fa-solid fa-users-viewfinder w-6 text-center group-hover:text-brand-orange transition-colors"></i>
+                <span class="font-semibold text-sm">Customer Journey</span>
+            </button>
+            <button onclick="switchView('sprints', 'Marketing Sprints', this)" class="nav-item w-full flex items-center space-x-4 px-4 py-3.5 rounded-xl transition-all text-gray-400 hover:bg-gray-800 hover:text-white group">
+                <i class="fa-solid fa-rocket w-6 text-center group-hover:text-brand-orange transition-colors"></i>
+                <span class="font-semibold text-sm">Marketing Sprints</span>
+            </button>
+            <button onclick="switchView('ethical', 'Brand Ethics Check', this)" class="nav-item w-full flex items-center space-x-4 px-4 py-3.5 rounded-xl transition-all text-gray-400 hover:bg-gray-800 hover:text-white group">
+                <i class="fa-solid fa-shield-heart w-6 text-center group-hover:text-brand-orange transition-colors"></i>
+                <span class="font-semibold text-sm">Brand Ethics Check</span>
+            </button>
+            <button onclick="switchView('roi', 'Growth & ROI', this)" class="nav-item w-full flex items-center space-x-4 px-4 py-3.5 rounded-xl transition-all text-gray-400 hover:bg-gray-800 hover:text-white group">
+                <i class="fa-solid fa-chart-line w-6 text-center group-hover:text-brand-orange transition-colors"></i>
+                <span class="font-semibold text-sm">Growth & ROI</span>
+            </button>
+        </nav>
+
+        <!-- User Profile Component -->
+        <div class="p-6 border-t border-gray-800 bg-gray-900/50 mt-auto">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-orange to-brand-gold flex items-center justify-center border-2 border-brand-navy shadow-md">
+                        <span class="font-bold text-sm text-white">IA</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-white">Ingweplex Admin</p>
+                        <p class="text-xs text-brand-gold font-medium">Pro Business Plan</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-gear text-gray-500 hover:text-white cursor-pointer transition-colors"></i>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 flex flex-col overflow-hidden relative">
+        
+        <!-- Header -->
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-10 z-10 sticky top-0">
+            <div class="flex items-center">
+                <h1 id="header-title" class="text-xl font-bold text-brand-navy tracking-tight">Dashboard Overview</h1>
+            </div>
+            <div class="flex items-center space-x-6">
+                <!-- Status indicator -->
+                <div class="hidden md:flex items-center px-3 py-1.5 bg-green-50 rounded-full border border-green-100">
+                    <span class="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
+                    <span class="text-xs font-bold text-green-700 uppercase tracking-wide">System Online</span>
+                </div>
+                
+                <button class="relative text-gray-400 hover:text-brand-navy transition-colors">
+                    <i class="fa-regular fa-bell text-xl"></i>
+                    <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-brand-orange border-2 border-white"></span>
+                </button>
+                
+                <div class="h-6 w-px bg-gray-300"></div> <!-- Divider -->
+                
+                <button class="flex items-center px-4 py-2 text-sm font-semibold text-gray-600 hover:text-brand-navy hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="fa-solid fa-download mr-2"></i> Export Report
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Views Container -->
+        <div class="flex-1 overflow-y-auto p-10 pb-24">
+            
+            <!-- 1. DASHBOARD VIEW -->
+            <div id="dashboard" class="view-section active space-y-8">
+                
+                <!-- Welcome Message -->
+                <div>
+                    <h2 class="text-2xl font-bold text-brand-navy">Welcome back, Team Ingweplex 👋</h2>
+                    <p class="text-gray-500 mt-1">Here is what is happening with your brand today.</p>
+                </div>
+
+                <!-- Top Metrics (Humanized) -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-gray-100 hover:border-brand-gold/30 transition-colors group">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-blue-50 rounded-lg text-blue-600"><i class="fa-solid fa-rocket"></i></div>
+                            <span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">+2 Active</span>
+                        </div>
+                        <h4 class="text-gray-500 text-sm font-semibold mb-1">Active Sprints</h4>
+                        <p class="text-3xl font-extrabold text-brand-navy">12</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-gray-100 hover:border-brand-gold/30 transition-colors">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-purple-50 rounded-lg text-purple-600"><i class="fa-solid fa-face-smile"></i></div>
+                            <span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">Healthy</span>
+                        </div>
+                        <h4 class="text-gray-500 text-sm font-semibold mb-1">Customer Happiness</h4>
+                        <p class="text-3xl font-extrabold text-brand-navy">94<span class="text-lg text-gray-400">/100</span></p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-orange-100 hover:border-brand-orange transition-colors">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-orange-50 rounded-lg text-brand-orange"><i class="fa-solid fa-shield-heart"></i></div>
+                            <span class="text-xs font-bold text-brand-orange bg-orange-50 px-2 py-1 rounded-full border border-orange-100">Review Needed</span>
+                        </div>
+                        <h4 class="text-gray-500 text-sm font-semibold mb-1">Brand Ethics Score</h4>
+                        <p class="text-3xl font-extrabold text-brand-navy">88%</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-gray-100 hover:border-brand-gold/30 transition-colors">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-green-50 rounded-lg text-green-600"><i class="fa-solid fa-wallet"></i></div>
+                            <span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">+15% vs Last Mo</span>
+                        </div>
+                        <h4 class="text-gray-500 text-sm font-semibold mb-1">Estimated Value Created</h4>
+                        <p class="text-3xl font-extrabold text-brand-navy">$14,500</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- AI Recommendation (Actionable) -->
+                    <div class="col-span-2 bg-gradient-to-br from-white to-orange-50 rounded-2xl shadow-soft border border-orange-100 p-8 relative overflow-hidden">
+                        <!-- Decorative background element -->
+                        <div class="absolute -right-10 -top-10 text-brand-orange opacity-5 text-9xl"><i class="fa-solid fa-lightbulb"></i></div>
+                        
+                        <div class="flex items-center space-x-2 mb-6">
+                            <span class="flex h-3 w-3 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-orange opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-brand-orange"></span>
+                            </span>
+                            <h3 class="text-sm font-bold tracking-widest uppercase text-brand-orange">AI Insight Ready</h3>
+                        </div>
+
+                        <h4 class="text-2xl font-extrabold text-brand-navy mb-2">Customers are leaving at checkout.</h4>
+                        <p class="text-gray-600 mb-6 max-w-lg leading-relaxed">
+                            We noticed a 12% drop in sales from mobile users over the last 48 hours. Let's send a smart, personalized 10% discount email to win them back before they buy from a competitor.
+                        </p>
+                        
+                        <div class="flex space-x-4">
+                            <button onclick="triggerAction('Creating Rescue Campaign...')" class="px-6 py-3 rounded-xl text-white font-bold shadow-md shadow-orange-500/30 hover:shadow-lg hover:-translate-y-0.5 transition-all bg-brand-orange">
+                                <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Fix This Automatically
+                            </button>
+                            <button class="px-6 py-3 rounded-xl text-brand-navy font-bold bg-white border border-gray-200 hover:bg-gray-50 transition-colors">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Connected Tools -->
+                    <div class="bg-white rounded-2xl shadow-soft border border-gray-100 p-8">
+                        <h3 class="font-bold mb-6 text-brand-navy text-lg">Connected Tools</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl transition-colors">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3"><i class="fa-brands fa-google text-blue-500 text-lg"></i></div>
+                                    <span class="font-semibold text-sm">Website Analytics</span>
+                                </div>
+                                <i class="fa-solid fa-check-circle text-green-500 text-lg"></i>
+                            </div>
+                            <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl transition-colors">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3"><i class="fa-brands fa-shopify text-green-500 text-lg"></i></div>
+                                    <span class="font-semibold text-sm">Online Store</span>
+                                </div>
+                                <i class="fa-solid fa-check-circle text-green-500 text-lg"></i>
+                            </div>
+                            <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl transition-colors">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center mr-3 border border-orange-100"><i class="fa-brands fa-salesforce text-blue-400 text-lg"></i></div>
+                                    <div>
+                                        <span class="font-semibold text-sm block text-brand-navy">Customer Database</span>
+                                        <span class="text-xs text-brand-orange font-medium">Syncing data...</span>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-spinner fa-spin text-brand-orange text-lg"></i>
+                            </div>
+                        </div>
+                        <button class="w-full mt-6 py-3 border-2 border-dashed border-gray-300 rounded-xl text-sm font-bold text-gray-500 hover:border-brand-navy hover:text-brand-navy transition-colors">
+                            + Connect New Tool
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. CX PULSE (CUSTOMER JOURNEY) VIEW -->
+            <div id="cx" class="view-section space-y-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-brand-navy">Customer Journey</h2>
+                    <p class="text-gray-500 mt-1">See exactly where you are losing potential buyers.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                    <!-- Chart Section -->
+                    <div class="col-span-3 bg-white p-8 rounded-2xl shadow-soft border border-gray-100">
+                        <h3 class="font-bold mb-6 text-lg text-brand-navy">Sales Funnel Health</h3>
+                        <div class="relative h-72 w-full">
+                            <canvas id="funnelChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Actions Section -->
+                    <div class="col-span-2 bg-brand-navy p-8 rounded-2xl shadow-lg border border-gray-800 text-white flex flex-col relative overflow-hidde
